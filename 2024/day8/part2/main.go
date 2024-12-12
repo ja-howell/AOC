@@ -13,9 +13,6 @@ func main() {
 	antennas := findAntennas(grid)
 	antinodes := findAntinodes(len(grid), len(grid[0]), antennas)
 	fmt.Println(len(antinodes))
-	// validAntinodes := validateAntinodes(len(grid), len(grid[0]), antinodes)
-
-	// fmt.Println(len(validAntinodes))
 }
 
 type Cell struct {
@@ -65,6 +62,8 @@ func findAntinodes(gl int, gw int, antennas map[byte][]Cell) map[Cell]struct{} {
 			for j := i + 1; j < len(antenna); j++ {
 				dc := antenna[i].col - antenna[j].col
 				dr := antenna[i].row - antenna[j].row
+				antinodes[antenna[i]] = struct{}{}
+				antinodes[antenna[j]] = struct{}{}
 				currCell := getAntinode(antenna[i], dr, dc)
 				//while inbounds
 				for isInbounds(gl, gw, currCell) {
@@ -84,20 +83,6 @@ func findAntinodes(gl int, gw int, antennas map[byte][]Cell) map[Cell]struct{} {
 
 func getAntinode(antenna Cell, dr int, dc int) Cell {
 	return Cell{col: antenna.col + dc, row: antenna.row + dr}
-}
-
-func validateAntinodes(length int, width int, antinodes map[Cell]struct{}) map[Cell]struct{} {
-	validAntinodes := map[Cell]struct{}{}
-	for antinode := range antinodes {
-		if validateAntinode(length, width, antinode) {
-			validAntinodes[antinode] = struct{}{}
-		}
-	}
-	return validAntinodes
-}
-
-func validateAntinode(length int, width int, antinode Cell) bool {
-	return antinode.row >= 0 && antinode.row < width && antinode.col >= 0 && antinode.col < length
 }
 
 func isInbounds(length int, width int, antinode Cell) bool {
